@@ -1,4 +1,4 @@
-sbt-state-browser
-=================
+#sbt-state-browser
 
-Browse your sbt project's state in a tree-view
+This is an sbt 0.12 plugin, which will give your project a <code>browse-sbt-state</code> command.  This will launch a graphical window allowing you to explore the sbt.State object graph that represents your build.   Somewhat-functioning search bar included!
+
