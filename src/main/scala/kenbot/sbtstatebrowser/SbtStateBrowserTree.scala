@@ -5,11 +5,11 @@ import scalaswingcontrib.tree._
 import sbt._
 import xsbti.AppConfiguration
 
-class SbtStateBrowserTree(state: State) extends Tree[Any] {
+class SbtStateBrowserTree(state: State, roots: Any*) extends Tree[Any] {
   model = createModel
   renderer = Tree.Renderer(renderNode)
   
-  def createModel = InternalTreeModel(state: Any)(getChildNodes)
+  def createModel = InternalTreeModel(roots: _*)(getChildNodes)
   
   def getChildNodes(a: Any): Seq[Any] = a match {
     case (_, value) => getChildNodes(value)
@@ -63,7 +63,7 @@ class SbtStateBrowserTree(state: State) extends Tree[Any] {
     case b: Load.BuildStructure => Seq(
       "units" -> b.units,
       "root" -> b.root,
-      "settings" -> b.settings,
+      "settings" -> b.settings.sortBy(renderNode),
       "data" -> b.data,
       "index" -> b.index,
       "streams" -> b.streams(state),
@@ -124,10 +124,10 @@ class SbtStateBrowserTree(state: State) extends Tree[Any] {
       "task" -> s.task,
       "extra" -> s.extra
     ) 
-    case arr: Array[_] => arr.toList
-    case seq: Seq[_] => seq         
-    case map: Map[_,_] => map.toSeq
-    case set: Set[_] => set.toSeq
+    case arr: Array[_] => arr.toList sortBy renderNode   
+    case seq: Seq[_] => seq sortBy renderNode   
+    case map: Map[_,_] => map.toSeq sortBy renderNode   
+    case set: Set[_] => set.toSeq sortBy renderNode   
     case _ => Seq()
   }
   

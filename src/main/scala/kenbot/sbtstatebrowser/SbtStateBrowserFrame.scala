@@ -8,14 +8,22 @@ import xsbti.AppConfiguration
 class SbtStateBrowserFrame(state: State) extends Frame {
   title = "sbt State Browser"
 
-  val stateBrowserTree = new SbtStateBrowserTree(state)
+  val stateBrowserTree = new SbtStateBrowserTree(state, state)
+  
+  val extractedTree = {
+    val Extracted(structure, settings, projectRef) = Project extract state
+    new SbtStateBrowserTree(state, structure, settings, projectRef)
+  }
+  
+  contents = new TabbedPane {
+    import TabbedPane.Page
+    pages += new Page("sbt.State", makeSearchableTree(stateBrowserTree))
+    pages += new Page("Project.extract(state)", makeSearchableTree(extractedTree))
+  }
+  
+  private def makeSearchableTree(browserTree: SbtStateBrowserTree) = 
+      new SearchableTree(browserTree, browserTree.createModel, browserTree.getChildNodes)
 
-  contents = searchableTree
-  
-  private def searchableTree = new SearchableTree(stateBrowserTree, 
-      stateBrowserTree.createModel, 
-      stateBrowserTree.getChildNodes)
-  
   override def closeOperation() = dispose()
   
   pack()
